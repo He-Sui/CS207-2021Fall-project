@@ -1,6 +1,7 @@
 `timescale 1ns / 1ps
 
-module decoder_display(r0, r1, r2, r3, r4, r5, r6, r7, state, clk, rst, seg_en, seg_out);
+module decoder_display( error, r0, r1, r2, r3, r4, r5, r6, r7, state, clk, rst, seg_en, seg_out);
+input [1 : 0] error;
 input [5 : 0] r0, r1, r2, r3, r4, r5, r6, r7;
 input clk;
 input [3 : 0]state;
@@ -38,6 +39,8 @@ end
 
 always @(scan_cnt)
 begin
+    case(error)
+    0:
     if(scan_cnt < state)
     case (result[scan_cnt])
         6'b000000: seg = 7'b0111111;//0
@@ -80,6 +83,22 @@ begin
     endcase
     else
         seg = 7'b0000000;
+    1:
+        case(scan_cnt)
+            0: seg = 7'b1100010;
+            1: seg = 7'b1010100;
+            2: seg = 7'b1100010;
+            default: seg = 7'b0000000;
+        endcase
+    2:
+        case(scan_cnt)
+            0:seg = 7'b1110001;
+            1:seg = 7'b0111110;
+            2:seg = 7'b0111000;
+            3:seg = 7'b0111000;
+            default: seg = 7'b0000000;
+        endcase
+    endcase
 end
 
 always @(posedge clkout, posedge rst)
